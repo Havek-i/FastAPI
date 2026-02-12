@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
 from typing import Annotated
+from models import SNum, User
 import uvicorn
 
 # Константы
@@ -11,12 +11,12 @@ PATH = 'app/templates'
 # Движок
 app = FastAPI()
 
+data = {
+    'id': 1,
+    'name': 'John Doe'
+}
 
-# Типы данных
-class SNum(BaseModel):
-    num1: int
-    num2: int
-
+user = User(**data)
 
 # Маршруты
 @app.get("/")
@@ -26,6 +26,11 @@ async def root():
 @app.get("/calculate")
 async def calculate():
     return FileResponse(f"{PATH}/calculate.html")
+
+@app.get('/users')
+async def get_user():
+    return user
+
 
 @app.post("/calculate")
 async def calculate_post(data: Annotated[SNum, Form()]):
