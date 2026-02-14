@@ -8,3 +8,7 @@ class SNum(BaseModel):
 class User(BaseModel):
     id: int
     name: str
+
+class Feedback(BaseModel):
+    name: str
+    message: str

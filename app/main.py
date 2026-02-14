@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import FileResponse
 from typing import Annotated
-from models import SNum, User
+from models import SNum, User, Feedback
 import uvicorn
 
 # Константы
@@ -11,12 +11,18 @@ PATH = 'app/templates'
 # Движок
 app = FastAPI()
 
+# Пр3
 data = {
     'id': 1,
     'name': 'John Doe'
 }
 
 user = User(**data)
+
+
+# Пр4
+feedbacks = list()
+
 
 # Маршруты
 @app.get("/")
@@ -35,6 +41,12 @@ async def get_user():
 @app.post("/calculate")
 async def calculate_post(data: Annotated[SNum, Form()]):
     return {"result": data.num1 + data.num2}
+
+@app.post('/feedback')
+async def add_feedback(feedback: Feedback):
+    feedbacks.append(feedback)
+    print(feedbacks)
+    return {"message": f"Feedback received. Thank you, {feedback.name}."}
 
 
 # Запуск файла
