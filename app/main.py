@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, Body
 from fastapi.responses import FileResponse
 from typing import Annotated
-from models import SNum, User, Feedback
+from models import SNum, User, Feedback, UserCreate
 import uvicorn
 
 # Константы
@@ -47,6 +47,12 @@ async def add_feedback(feedback: Feedback):
     feedbacks.append(feedback)
     print(feedbacks)
     return {"message": f"Feedback received. Thank you, {feedback.name}."}
+
+@app.post('/create_user')
+async def create_user(user: UserCreate):
+    return user
+
+
 
 
 # Запуск файла
