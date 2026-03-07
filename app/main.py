@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Form, Body
+from fastapi import FastAPI, Form, Body, Path
 from fastapi.responses import FileResponse
 from typing import Annotated
 from models import SNum, User, Feedback, UserCreate
 import uvicorn
+
+from db.db import sample_products
 
 # Константы
 PATH = 'app/templates'
@@ -11,48 +13,21 @@ PATH = 'app/templates'
 # Движок
 app = FastAPI()
 
-# Пр3
-data = {
-    'id': 1,
-    'name': 'John Doe'
-}
-
-user = User(**data)
-
-
-# Пр4
-feedbacks = list()
-
 
 # Маршруты
-@app.get("/")
-async def root():
-    return FileResponse(f'{PATH}/index.html')
+@app.get('/product/{product_id}')
+def get_product(product_id: int):
+    product = [item for item in sample_products if item['product_id'] == product_id]
+    return product[0]
 
-@app.get("/calculate")
-async def calculate():
-    return FileResponse(f"{PATH}/calculate.html")
+@app.get('/products/search')
+def serach_products(keyword: str, category: str | None = None, limit: int = 10):
+    result = list(filter(lambda item: keyword.lower() in item['name'].lower(), sample_products))
 
-@app.get('/users')
-async def get_user():
-    return user
+    if category:
+        result = list(filter(lambda item: item["category"] == category, result))
 
-
-@app.post("/calculate")
-async def calculate_post(data: Annotated[SNum, Form()]):
-    return {"result": data.num1 + data.num2}
-
-@app.post('/feedback')
-async def add_feedback(feedback: Feedback):
-    feedbacks.append(feedback)
-    print(feedbacks)
-    return {"message": f"Feedback received. Thank you, {feedback.name}."}
-
-@app.post('/create_user')
-async def create_user(user: UserCreate):
-    return user
-
-
+    return result[:limit]
 
 
 # Запуск файла
